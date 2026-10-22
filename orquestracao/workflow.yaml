@@ -1,0 +1,30 @@
+# Orquestracao do pipeline (Cloud Workflows), disparada pelo Cloud Scheduler.
+# 1. batch: Bronze -> Silver -> Gold (Cloud Run Job pipeline-batch)
+# 2. streaming: um micro-lote (Cloud Run Job pipeline-streaming), SO se o batch deu certo
+# O conector espera cada job terminar. Se um job falha, o conector levanta erro, o workflow
+# para (o streaming nao roda) e a execucao termina como falha: o alerta dispara pelo log ERROR.
+main:
+  params: [entrada]
+  steps:
+    - configurar:
+        assign:
+          - projeto: ${sys.get_env("GOOGLE_CLOUD_PROJECT_ID")}
+          - regiao: ${sys.get_env("GOOGLE_CLOUD_LOCATION")}
+          - inicio: ${sys.now()}
+    - rodar_batch:
+        call: googleapis.run.v1.namespaces.jobs.run
+        args:
+          name: ${"namespaces/" + projeto + "/jobs/pipeline-batch"}
+          location: ${regiao}
+        result: execucao_batch
+    - rodar_streaming:
+        call: googleapis.run.v1.namespaces.jobs.run
+        args:
+          name: ${"namespaces/" + projeto + "/jobs/pipeline-streaming"}
+          location: ${regiao}
+        result: execucao_streaming
+    - concluir:
+        return:
+          batch: ${execucao_batch.metadata.name}
+          streaming: ${execucao_streaming.metadata.name}
+          duracao_s: ${sys.now() - inicio}

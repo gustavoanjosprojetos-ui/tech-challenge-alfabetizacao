@@ -1,0 +1,28 @@
+id_tabela,nome_coluna,chave,cobertura_temporal,valor
+alunos,alfabetizado,0,(1),Não
+alunos,alfabetizado,1,(1),Sim
+alunos,preenchimento_caderno,0,(1),Prova não preenchida
+alunos,preenchimento_caderno,1,(1),Prova preenchida
+alunos,presenca,0,(1),Ausente
+alunos,presenca,1,(1),Presente
+uf,rede,0,(1),"Total (Federal, Estadual, Municipal e Privada)"
+municipio,rede,0,(1),"Total (Federal, Estadual, Municipal e Privada)"
+uf,rede,1,(1),Federal
+municipio,rede,1,(1),Federal
+alunos,rede,1,(1),Federal
+alunos,rede,2,(1),Estadual
+municipio,rede,2,(1),Estadual
+uf,rede,2,(1),Estadual
+uf,rede,3,(1),Municipal
+municipio,rede,3,(1),Municipal
+alunos,rede,3,(1),Municipal
+uf,rede,4,(1),Privada
+alunos,rede,4,(1),Privada
+municipio,rede,4,(1),Privada
+municipio,rede,5,(1),Pública (Estadual e Municipal)
+uf,rede,5,(1),Pública (Estadual e Municipal)
+municipio,rede,6,(1),"Pública (Federal, Estadual e Municipal)"
+uf,rede,6,(1),"Pública (Federal, Estadual e Municipal)"
+municipio,serie,2,(1),2° ano do Ensino Fundamental
+uf,serie,2,(1),2° ano do Ensino Fundamental
+alunos,serie,2,(1),2° ano do Ensino Fundamental

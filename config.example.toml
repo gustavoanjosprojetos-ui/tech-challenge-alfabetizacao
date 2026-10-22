@@ -1,0 +1,54 @@
+# Copie para config.toml (que nao vai para o git) e ajuste.
+# projeto e bucket tambem podem vir das variaveis de ambiente GCP_PROJECT e GCS_BUCKET.
+# Formato TOML: lido pela biblioteca padrao do Python (tomllib), sem dependencia extra.
+
+projeto = "seu-projeto-gcp"            # ou variavel de ambiente GCP_PROJECT
+# A fonte (basedosdados) fica na multirregiao US. Manter bucket e datasets em US
+# evita transferencia entre regioes e permite EXPORT DATA direto para o bucket.
+localizacao = "US"
+bucket = "seu-bucket-unico"            # ou GCS_BUCKET; o nome precisa ser unico no mundo
+fonte_dataset = "basedosdados.br_inep_avaliacao_alfabetizacao"
+
+tabelas_fonte = [
+  "alunos",
+  "municipio",
+  "uf",
+  "meta_alfabetizacao_brasil",
+  "meta_alfabetizacao_uf",
+  "meta_alfabetizacao_municipio",
+  "dicionario",
+]
+
+# Trava de custo: nenhuma query roda se o dry run passar disso.
+max_gb_por_query = 5
+
+# Ponto de corte do Saeb (Pesquisa Alfabetiza Brasil, INEP 2023).
+corte_alfabetizacao = 743
+
+[datasets]
+bronze = "bronze"              # tabelas externas sobre o Parquet do GCS (historico completo)
+silver_stage = "silver_stage"  # Silver recem construida, ainda nao validada
+silver = "silver"              # Silver publicada (so recebe dado aprovado na qualidade)
+gold_stage = "gold_stage"      # Gold recem construida, ainda nao validada
+gold = "gold"
+ops = "ops"                    # metricas de execucao e resultados de qualidade
+
+# Limiares das taxas de correspondencia de joins (bloqueantes).
+# Justificativas no README, secao Qualidade de dados.
+[qualidade]
+# Combinacoes ano/municipio/rede de alunos avaliados que existem no resultado
+# publicado por municipio. O INEP pode suprimir municipios com poucos alunos,
+# entao 100% nao e esperado; abaixo de 90% indicaria chave quebrada.
+match_alunos_resultado_municipio = 0.90
+# Metas municipais (rede Municipal = codigo 3) com resultado da rede 3 no mesmo ano.
+match_meta_municipio_resultado = 0.95
+# Metas de UF (rede Publica = codigo 5) com resultado da rede 5 no mesmo ano.
+# DF e RR nao aparecem na tabela uf da fonte (2 de 27 UFs = 92,6%),
+# por isso o limiar e 0.85 e nao 0.95.
+match_meta_uf_resultado_uf = 0.85
+
+# Streaming simulado (Pub/Sub -> BigQuery -> micro-lote)
+[streaming]
+topico = "alfabetizacao-eventos"
+assinatura = "alfabetizacao-eventos-bronze"   # assinatura BigQuery: grava em bronze.eventos_stream
+janela_horas = 48   # o micro-lote so examina mensagens publicadas nessa janela (limita o custo)

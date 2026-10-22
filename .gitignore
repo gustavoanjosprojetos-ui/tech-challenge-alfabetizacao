@@ -1,0 +1,11 @@
+# configuracao local e credenciais nunca vao para o repositorio
+config.toml
+*.json.key
+application_default_credentials.json
+.env
+
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+saida_exploracao/

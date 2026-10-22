@@ -1,0 +1,122 @@
+Medicoes FinOps - 21/10/2026 21:05:43,78 
+ 
+=== 1. Cloud Storage: tamanho total do bucket (Bronze em Parquet/Snappy) 
+149211574    gs://tech-challenge-alfab-gustavo
+--- por tabela da Bronze (todas as execucoes) 
+149211574    gs://tech-challenge-alfab-gustavo/bronze/*
+--- quantidade de execucoes (run_id) da Bronze de alunos 
+gs://tech-challenge-alfab-gustavo/bronze/alunos/ingestion_date=2026-10-21/run_id=20261021T115739Z/
+gs://tech-challenge-alfab-gustavo/bronze/alunos/ingestion_date=2026-10-21/run_id=20261021T211337Z/
+ 
+=== 2. Artifact Registry: tamanho da imagem 
+Listing items under project tech-challenge-alfab, location us-central1, repository pipeline.
+
+IMAGE                                                              TAGS    CREATE_TIME          SIZE
+us-central1-docker.pkg.dev/tech-challenge-alfab/pipeline/pipeline  latest  2026-10-21T18:05:44  67252563
+ 
+=== 3. Cloud Run Jobs: duracao real de cada execucao 
+EXECUTION                 JOB  START_TIME                   COMPLETION_TIME              SUCCEEDED_COUNT  FAILED_COUNT
+pipeline-batch-zqzbl           2026-10-21T21:34:42.656806Z  2026-10-21T21:37:20.649010Z                   1
+pipeline-streaming-x56tk       2026-10-21T21:19:32.647789Z  2026-10-21T21:20:32.902739Z  1
+pipeline-batch-sbfpw           2026-10-21T21:12:52.653528Z  2026-10-21T21:18:24.625402Z  1
+ 
+=== 4. Cloud Build: duracao dos builds 
+ID                                    CREATE_TIME                DURATION  SOURCE                                                                                              IMAGES                                                                       STATUS
+57870110-2f3d-4d5a-ab6a-0250e8838357  2026-10-21T21:04:59+00:00  45S       gs://tech-challenge-alfab_cloudbuild/source/1792616696.721188-2261b2b5f83b4b6082b685920df9d256.tgz  us-central1-docker.pkg.dev/tech-challenge-alfab/pipeline/pipeline (+1 more)  SUCCESS
+ 
+=== 5. Workflows: execucoes 
+NAME                                  STATE      START_TIME                      END_TIME
+606bd526-e4ce-4a0c-8529-d1f1d5c5d673  SUCCEEDED  2026-10-21T21:12:37.223848667Z  2026-10-21T21:20:52.787038035Z
+ 
+=== 6. BigQuery dry run: efeito de selecionar colunas e filtrar particao 
+--- fonte inteira (o que a Bronze le a cada execucao) 
+Query successfully validated. Assuming the tables are not modified, running this query will process 268545240 bytes of data.
+--- silver.alunos, todas as colunas 
+Query successfully validated. Assuming the tables are not modified, running this query will process upper bound of 547052902 bytes of data.
+--- silver.alunos, so as 3 colunas do indicador 
+Query successfully validated. Assuming the tables are not modified, running this query will process upper bound of 65003940 bytes of data.
+--- silver.alunos, 3 colunas + filtro de particao (ano = 2024) 
+Query successfully validated. Assuming the tables are not modified, running this query will process upper bound of 52716188 bytes of data.
+--- consulta analitica tipica na Gold 
+Query successfully validated. Assuming the tables are not modified, running this query will process 1384965 bytes of data.
+ 
+=== 7. BigQuery: bytes por execucao, armazenamento e volume do streaming 
+Waiting on bqjob_r39a41a177c67fdb8_000001a160ee1fc3_1 ... (0s) Current status: RUNNING                                                                                      Waiting on bqjob_r39a41a177c67fdb8_000001a160ee1fc3_1 ... (0s) Current status: DONE   
+[
+  {
+    "medida": "armazenamento", 
+    "valor": "{\"dataset_id\":\"bronze\",\"tabelas\":8,\"bytes\":147801,\"linhas\":360}"
+  }, 
+  {
+    "medida": "armazenamento", 
+    "valor": "{\"dataset_id\":\"gold\",\"tabelas\":9,\"bytes\":11067981,\"linhas\":108148}"
+  }, 
+  {
+    "medida": "armazenamento", 
+    "valor": "{\"dataset_id\":\"gold_stage\",\"tabelas\":8,\"bytes\":9887854,\"linhas\":83967}"
+  }, 
+  {
+    "medida": "armazenamento", 
+    "valor": "{\"dataset_id\":\"ops\",\"tabelas\":5,\"bytes\":85265,\"linhas\":703}"
+  }, 
+  {
+    "medida": "armazenamento", 
+    "valor": "{\"dataset_id\":\"silver\",\"tabelas\":9,\"bytes\":557346544,\"linhas\":3978536}"
+  }, 
+  {
+    "medida": "armazenamento", 
+    "valor": "{\"dataset_id\":\"silver_stage\",\"tabelas\":9,\"bytes\":557295504,\"linhas\":3978217}"
+  }, 
+  {
+    "medida": "execucao", 
+    "valor": "{\"run_id\":\"20261021T115739Z\",\"pipeline\":\"batch\",\"inicio\":\"2026-10-21T11:57:40.147322Z\",\"duracao_etapas_s\":158.3,\"bytes_faturados\":1485832192,\"etapas\":24,\"falhou\":false}"
+  }, 
+  {
+    "medida": "execucao", 
+    "valor": "{\"run_id\":\"20261021T120755Z\",\"pipeline\":\"batch\",\"inicio\":\"2026-10-21T12:07:57.940758Z\",\"duracao_etapas_s\":93,\"bytes_faturados\":1153433600,\"etapas\":9,\"falhou\":true}"
+  }, 
+  {
+    "medida": "execucao", 
+    "valor": "{\"run_id\":\"20261021T123426Z\",\"pipeline\":\"batch\",\"inicio\":\"2026-10-21T12:34:28.757646Z\",\"duracao_etapas_s\":204,\"bytes_faturados\":1685061632,\"etapas\":34,\"falhou\":false}"
+  }, 
+  {
+    "medida": "execucao", 
+    "valor": "{\"run_id\":\"20261021T190526Z\",\"pipeline\":\"streaming\",\"inicio\":\"2026-10-21T19:05:26.650985Z\",\"duracao_etapas_s\":4.6,\"bytes_faturados\":52428800,\"etapas\":1,\"falhou\":false}"
+  }, 
+  {
+    "medida": "execucao", 
+    "valor": "{\"run_id\":\"20261021T190604Z\",\"pipeline\":\"streaming\",\"inicio\":\"2026-10-21T19:06:04.722730Z\",\"duracao_etapas_s\":42.3,\"bytes_faturados\":220200960,\"etapas\":7,\"falhou\":false}"
+  }, 
+  {
+    "medida": "execucao", 
+    "valor": "{\"run_id\":\"20261021T190742Z\",\"pipeline\":\"streaming\",\"inicio\":\"2026-10-21T19:07:42.149205Z\",\"duracao_etapas_s\":40.6,\"bytes_faturados\":220200960,\"etapas\":7,\"falhou\":false}"
+  }, 
+  {
+    "medida": "execucao", 
+    "valor": "{\"run_id\":\"20261021T190916Z\",\"pipeline\":\"streaming\",\"inicio\":\"2026-10-21T19:09:16.373017Z\",\"duracao_etapas_s\":4.2,\"bytes_faturados\":52428800,\"etapas\":1,\"falhou\":false}"
+  }, 
+  {
+    "medida": "execucao", 
+    "valor": "{\"run_id\":\"20261021T204035Z\",\"pipeline\":\"streaming\",\"inicio\":\"2026-10-21T20:40:35.835486Z\",\"duracao_etapas_s\":5.3,\"bytes_faturados\":52428800,\"etapas\":1,\"falhou\":false}"
+  }, 
+  {
+    "medida": "execucao", 
+    "valor": "{\"run_id\":\"20261021T204059Z\",\"pipeline\":\"streaming\",\"inicio\":\"2026-10-21T20:40:59.770921Z\",\"duracao_etapas_s\":39.2,\"bytes_faturados\":220200960,\"etapas\":7,\"falhou\":false}"
+  }, 
+  {
+    "medida": "execucao", 
+    "valor": "{\"run_id\":\"20261021T211337Z\",\"pipeline\":\"batch\",\"inicio\":\"2026-10-21T21:13:37.922780Z\",\"duracao_etapas_s\":176.1,\"bytes_faturados\":2017460224,\"etapas\":41,\"falhou\":false}"
+  }, 
+  {
+    "medida": "execucao", 
+    "valor": "{\"run_id\":\"20261021T212020Z\",\"pipeline\":\"streaming\",\"inicio\":\"2026-10-21T21:20:20.779653Z\",\"duracao_etapas_s\":3.2,\"bytes_faturados\":52428800,\"etapas\":1,\"falhou\":false}"
+  }, 
+  {
+    "medida": "execucao", 
+    "valor": "{\"run_id\":\"20261021T213546Z\",\"pipeline\":\"batch\",\"inicio\":\"2026-10-21T21:35:47.250651Z\",\"duracao_etapas_s\":67.3,\"bytes_faturados\":1153433600,\"etapas\":9,\"falhou\":true}"
+  }, 
+  {
+    "medida": "pubsub", 
+    "valor": "{\"mensagens\":360,\"bytes_payload\":94161,\"media_bytes\":261.6}"
+  }
+]

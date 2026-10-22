@@ -1,0 +1,11 @@
+# Arquivos que NAO sobem para o Cloud Build (codigo-fonte da imagem).
+.gcloudignore
+.git/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+config.toml
+docs/
+saida_exploracao/
+*.zip

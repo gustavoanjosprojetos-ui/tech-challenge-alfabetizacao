@@ -1,0 +1,10 @@
+# Constroi a imagem do pipeline e publica no Artifact Registry.
+# Roda com uma conta de servico propria (pipeline-build), por isso os logs vao so para o
+# Cloud Logging (exigencia do Cloud Build para contas de servico especificadas pelo usuario).
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args: ["build", "-t", "${_IMAGEM}", "."]
+images:
+  - "${_IMAGEM}"
+options:
+  logging: CLOUD_LOGGING_ONLY
