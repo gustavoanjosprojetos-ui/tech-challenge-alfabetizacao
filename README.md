@@ -137,7 +137,7 @@ flowchart LR
 
 ```
 pipeline/            código Python do pipeline
-  bronze.py          ingestão batch -> Bronze (GCS)
+  bronze.py          ingestão batch -> Bronze (GCS); o SQL da Bronze fica aqui
   silver.py          Silver: stage -> qualidade -> publicação
   gold.py            Gold: stage -> qualidade -> publicação
   camadas.py         padrão comum de construir/publicar
@@ -149,7 +149,7 @@ pipeline/            código Python do pipeline
   setup_streaming.py tópico, assinatura e tabelas do streaming
   setup_alerta.py    política de alerta por e-mail
   pubsub_rest.py     cliente REST do Pub/Sub
-sql/silver/          SQL da Silver (1 arquivo por tabela)
+sql/silver/          SQL da Silver (1 arquivo por tabela); a Bronze não tem pasta, ver Decisões
 sql/gold/            SQL da Gold
 sql/streaming/       SQL do micro-lote
 orquestracao/        workflow.yaml, cloudbuild.yaml, implantar.cmd
@@ -248,6 +248,10 @@ scripts\medir_custos.cmd
 - **Por quê:** a fonte já está no BigQuery, na multirregião US. Ler direto evita baixar arquivos e manter um passo de upload.
 - **Custo:** só os bytes lidos. A leitura da fonte inteira custa 268,5 MB por execução (dry run). Não há egress nem transferência entre nuvens, porque bucket e datasets também estão em US.
 - **Quando a fonte for atualizada:** a próxima execução agendada exporta para um **novo `run_id`** na Bronze e reconstrói Silver e Gold. As versões anteriores continuam no bucket.
+
+**Por que a Bronze não tem pasta em `sql/`**
+- A Bronze é uma **cópia fiel da fonte, sem transformação**. O SQL é um único `EXPORT DATA ... AS SELECT *` para Parquet/Snappy, igual para as 7 tabelas, e por isso é montado em um laço em `pipeline/bronze.py`. O mesmo arquivo cria as tabelas externas `bronze.<tabela>` (partição hive por `ingestion_date` e `run_id`) e confere a contagem de linhas de cada execução.
+- A Silver e a Gold têm regra de negócio diferente em cada tabela, então cada consulta ganhou um arquivo próprio em `sql/silver/` e `sql/gold/`.
 
 **Batch × streaming**
 
