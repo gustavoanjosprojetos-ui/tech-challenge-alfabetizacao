@@ -4,7 +4,7 @@ Tech Challenge, Fase 2 (POS TECH). Pipeline de dados **batch + streaming** no **
 **arquitetura medalhão**, sobre o dataset `br_inep_avaliacao_alfabetizacao` da Base dos Dados.
 Tudo o que está descrito aqui foi **executado na nuvem**, com evidências em `docs/evidencias/`.
 
-**Vídeo executivo:** *link a ser adicionado após a gravação.*
+**Vídeo executivo:** *https://youtu.be/c2QjrCAKYCE*
 
 ---
 
